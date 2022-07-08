@@ -16,11 +16,11 @@ params = Dict(
 altParams = Dict(
     # neutral: all BH seeds germinate, BH and WT behave identically
     "neutctr" => 
-    [0.5, 1.0, -1.0, -1.0, 1.0, 0.1, 3,  "ctr_neut_alt"],
-    # positive control: delayed germination is beneficial when environment is consistently bad (dry)
+    [0.5, 1.0, -1.0, -1.0, 1.0, 0.05, 3,  "ctr_neut_alt"],
+    # positive control: delayed germination is beneficial when environment has high variance
     "posctr" => 
-    [0.5, 0.6, -1.0, -1.0, 1.0, 0.1, 3,  "ctr_pos_alt"],
-    # negative control: delayed germination is deleterious when environment is consistently good
+    [0.5, 0.6, -1.0, -1.0, 1.0, 0.3, 3,  "ctr_pos_alt"],
+    # negative control: delayed germination is deleterious when environment has low variance
     "negctr" => 
-    [0.5, 0.6, -1.0, -1.0, 1.0, 0.1, 3,  "ctr_neg_alt"]
+    [0.5, 0.6, -1.0, -1.0, 1.0, 0.05, 3,  "ctr_neg_alt"]
 )

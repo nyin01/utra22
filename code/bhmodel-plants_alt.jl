@@ -32,7 +32,7 @@ function getFitness(survivalRate::Float64, offspringCount::Float64, w::Float64, 
     # nVariance = normalizeVariance(envVariance)
 
     if nVariance > threshold # bad env
-        realizedW = rand(truncated(Normal(expectedW, nVariance); lower=0.0))
+        realizedW = rand(TruncatedNormal(expectedW, nVariance, 0.0, expectedW))
     else # good env
         realizedW = rand(truncated(Normal(expectedW, nVariance); lower=0.0))
     end
@@ -104,14 +104,14 @@ function simulate(k::Int64, bhGermRate::Float64, survivalRate::Float64, offsprin
 end
 
 # parameters:
-p = "neutctr"
+p = "negctr"
 (bhwtRatio, bhGermRate, survivalRate, offspringCount, w, envVariance, maxN, file) = altParams[p]
 
 reps = floor(500 * 10^maxN) # number of replicates
 a = range(start=0, stop=maxN, length=10)
 allN = [convert(Int64, floor(10^i)) for i in a] # creates a vector of 10 population sizes evenly spaced on a log scale
 
-f = "results/$file g=$bhGermRate d=$pD.csv"
+f = "results/$file g=$bhGermRate s2=$envVariance.csv"
 out = open(f, "w") # creates a new output file whose filename includes parameters
 write(out, join(["CarryingCap", "NPfix"], ","), "\n") # populates output file with vector of 10 population sizes
 close(out)
