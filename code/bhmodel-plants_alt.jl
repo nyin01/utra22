@@ -72,9 +72,14 @@ function reproduce(k::Int64, wt::Int64, bhActive::Int64, survivalRate::Float64, 
 end
 
 function bankStatement(newSeeds, bhDormant::Int64)
-    (bh, wt) = newSeeds
-    nextGenSeedNum = [bh + bhDormant, wt]
-    return nextGenSeedNum
+    # for negative control, assume all seeds in seedbank die (bet hedging ineffective)
+    if p == "negctr"
+        return newSeeds
+    else
+        (bh, wt) = newSeeds
+        nextGenSeedNum = [bh + bhDormant, wt]
+        return nextGenSeedNum
+    end
 end
 
 function getNextGen(k::Int64, seedNum, bhGermRate::Float64, survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
