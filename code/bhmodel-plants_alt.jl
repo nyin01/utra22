@@ -27,9 +27,9 @@ function getFitness(survivalRate::Float64, offspringCount::Float64, w::Float64, 
 
     threshold = 0.2 # might make this global or a param
 
-    nVariance = envVariance
+    # nVariance = envVariance
     # might need to scale variance to use in distribution:
-    # nVariance = normalizeVariance(envVariance)
+    nVariance = rand(truncated(Normal(envVariance, 0.05); lower=0.0))
 
     if nVariance > threshold # bad env
         realizedW = rand(TruncatedNormal(expectedW, nVariance, 0.0, expectedW))
@@ -109,7 +109,7 @@ function simulate(k::Int64, bhGermRate::Float64, survivalRate::Float64, offsprin
 end
 
 # parameters:
-p = "negctr"
+p = "neutctr2"
 (bhwtRatio, bhGermRate, survivalRate, offspringCount, w, envVariance, maxN, file) = altParams[p]
 
 reps = floor(500 * 10^maxN) # number of replicates
