@@ -1,5 +1,6 @@
+# old params
 # bhwtRatio, bhGermRate, pD, wGood, wBad, maxN, file
-params = Dict(
+oldParams = Dict(
     # neutral: all BH seeds germinate, BH and WT behave identically
     "neutctr" => 
     [0.5, 1.0, 0.0, 1.5, 0.8, 3, "ctr_neut"],
@@ -11,9 +12,8 @@ params = Dict(
     [0.5, 0.6, 0.0, 1.5, 0.8, 3, "ctr_neg"]
 )
 
-# alternative set of parameters:
 # bhwtRatio, bhGermRate, survivalRate(place holder), offspringCount(place holder), w, envVariance, maxN, file
-altParams = Dict(
+params = Dict(
     # neutral: all BH seeds germinate, BH and WT behave identically
     "neutctr" => 
     [0.5, 1.0, -1.0, -1.0, 1.0, 0.05, 3,  "ctr_neut_alt"],
