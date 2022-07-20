@@ -12,7 +12,7 @@ end
 
 function normalizeVariance(envVariance)
     return -1.
-end
+end 
 
 # alternative function:
 # when envVariance is within an acceptable range (env is good)
@@ -22,14 +22,20 @@ end
 #   pull from distribution skewed left (can get lower fitness)
 # not fully implemented
 function getFitness(survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
-    expectedW = w
-    # expectedW = survivalRate * offspringCount
+    if occursin("ctr", p)
+        expectedW = w
+    else
+        expectedW = survivalRate * offspringCount
+    end
 
-    threshold = 0.2 # might make this global or a param
+    threshold = 0.3 # might make this global or a param
 
     # nVariance = envVariance
     # might need to scale variance to use in distribution:
-    nVariance = rand(truncated(Normal(envVariance, 0.05); lower=0.0))
+    # if p == "neutctr0"
+        nVariance = envVariance
+    # else nVariance = rand(truncated(Normal(envVariance, 0.05); lower=0.0))
+    # end
 
     if nVariance > threshold # bad env
         realizedW = rand(TruncatedNormal(expectedW, nVariance, 0.0, expectedW))
@@ -73,7 +79,7 @@ end
 
 function bankStatement(newSeeds, bhDormant::Int64)
     # for negative control, assume all seeds in seedbank die (bet hedging ineffective)
-    if p == "negctr"
+    if occursin("neg", p)
         return newSeeds
     else
         (bh, wt) = newSeeds
@@ -124,7 +130,7 @@ close(out)
 println("********************************************************")
 println(raw"population sizes: " * "$allN")
 println("parameters: bhwtRatio, bhGermRate, survivalRate(place holder), offspringCount(place holder), w, envVariance, maxN, file")
-println(altParams[p])
+println(params[p])
 println(raw"reps: " * "$reps")
 println("********************************************************")
 
