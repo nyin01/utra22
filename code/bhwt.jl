@@ -5,42 +5,16 @@ include("parameters.jl")
 
 function bhGerminate(bhGermRate::Float64, bhSeedNum)
     active = rand(Binomial(bhSeedNum, bhGermRate))
-    # active = round(rand(Normal(bhGermRate, 0.03)) * bhSeedNum)
     bhSeeds = [active, bhSeedNum - active]
     return bhSeeds
 end
 
-function normalizeVariance(envVariance)
-    return -1.
-end 
-
-# alternative function:
-# when envVariance is within an acceptable range (env is good)
-#   pull realizedW from a normal distribution (fitness slightly fluctuates)
-#   or some distribution skewed right (can get higher fitness)
-# when envVariance is outside the range (env is bad/unstable)
-#   pull from distribution skewed left (can get lower fitness)
-# not fully implemented
-function getFitness(survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
-    if occursin("ctr", p)
-        expectedW = w
+function getFitness(s::Float64, cv::Float64)
+    expectedW = 1 + s
+    if cv > 0.2
+        realizedW = rand(TruncatedNormal(expectedW, cv, 0, expectedW)) # play w this
     else
-        expectedW = survivalRate * offspringCount
-    end
-
-    threshold = 0.3 # might make this global or a param
-
-    # nVariance = envVariance
-    # might need to scale variance to use in distribution:
-    # if p == "neutctr0"
-        nVariance = envVariance
-    # else nVariance = rand(truncated(Normal(envVariance, 0.05); lower=0.0))
-    # end
-
-    if nVariance > threshold # bad env
-        realizedW = rand(TruncatedNormal(expectedW, nVariance, 0.0, expectedW))
-    else # good env
-        realizedW = rand(truncated(Normal(expectedW, nVariance); lower=0.0))
+        realizedW = rand(truncated(Normal(expectedW, cv); lower=0.0))
     end
     return realizedW
 end
@@ -48,7 +22,6 @@ end
 function randRep(wt::Int64, bhActive::Int64, realizedW::Float64)
     expectedBH = realizedW * bhActive
     expectedWT = realizedW * wt
-    # realizedOffsprings = [expectedBH, expectedWT]
     realizedOffsprings = [rand(Poisson(expectedBH)), rand(Poisson(expectedWT))]
     return realizedOffsprings
 end
@@ -64,11 +37,11 @@ function resizePop(realizedOffsprings, k::Int64)
     end
 end
 
-function reproduce(k::Int64, wt::Int64, bhActive::Int64, survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
+function reproduce(k::Int64, wt::Int64, bhActive::Int64, s::Float64, cv::Float64)
     # randomize pD
     # pD = rand(truncated(Normal(pD, 0.05); lower=0.0))
     # get w (fitness) as function of env
-    realizedW = getFitness(survivalRate, offspringCount, w, envVariance)
+    realizedW = getFitness(s, cv)
     # random reproduction: expected offspring = w * current counts
     # currently no randomization for realizedOffsprings bc w is randomized
     realizedOffsprings = randRep(wt, bhActive, realizedW)
@@ -88,49 +61,51 @@ function bankStatement(newSeeds, bhDormant::Int64)
     end
 end
 
-function getNextGen(k::Int64, seedNum, bhGermRate::Float64, survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
+function getNextGen(k::Int64, seedNum, bhGermRate::Float64, s::Float64, cv::Float64)
     # generate [bh active seeds, bh dormant seeds] 
     (bhActive, bhDormant) = bhGerminate(bhGermRate, seedNum[1])
     # wt seeds unchanged
     wt = seedNum[2]
     # reproduction, input only active seeds, [bh active seeds, wt seeds]
-    newSeeds = reproduce(k, wt, bhActive, survivalRate, offspringCount, w, envVariance)
+    newSeeds = reproduce(k, wt, bhActive, s, cv)
     # combine seed bank with new seeds, [bh, wt] 
     nextGenSeedNum = bankStatement(newSeeds, bhDormant)
     return nextGenSeedNum
 end
 
-function simulate(k::Int64, bhGermRate::Float64, survivalRate::Float64, offspringCount::Float64, w::Float64, envVariance::Float64)
-    initBH = ceil(Int64, bhwtRatio * k)
+function simulate(k::Int64, bhGermRate::Float64, s::Float64, cv::Float64)
+    initBH = ceil(Int64, r * k)
     # number of seeds for BH population and non-BH population, respectively
     seedNum = [initBH, k - initBH]
     generations::Int64 = 1
     # while loop simulates as long as both populations are present. ends when one (or both) go extinct
     while 0 < seedNum[1] && 0 < seedNum[2]
-        seedNum = getNextGen(k, seedNum, bhGermRate, survivalRate, offspringCount, w, envVariance)
+        seedNum = getNextGen(k, seedNum, bhGermRate, s, cv)
         generations += 1
     end
     return seedNum[1] > 0
     # returns True (1) if BH win, False (0) otherwise
 end
 
-# parameters:
-p = "neutctr2"
-(bhwtRatio, bhGermRate, survivalRate, offspringCount, w, envVariance, maxN, file) = params[p]
+# parameters: 
+#   r(bhwtRatio), g(bh germination rate), s(selection coefficient), cv(coefficient of variation), mln(max log population size), f(fileName)
+p = "neutctr0"
+(r, g, s, cv, mln, f) = bhwtParams[p]
 
-reps = floor(500 * 10^maxN) # number of replicates
-a = range(start=0, stop=maxN, length=10)
+reps = floor(500 * 10^mln) # number of replicates
+a = range(start=0, stop=mln, length=10)
 allN = [convert(Int64, floor(10^i)) for i in a] # creates a vector of 10 population sizes evenly spaced on a log scale
+popfirst!(allN)
 
-f = "results/$file g=$bhGermRate s2=$envVariance.csv"
-out = open(f, "w") # creates a new output file whose filename includes parameters
-write(out, join(["CarryingCap", "NPfix"], ","), "\n") # populates output file with vector of 10 population sizes
+file = "results/$f.csv"
+out = open(file, "w")
+write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
 close(out)
 
 println("********************************************************")
-println(raw"population sizes: " * "$allN")
-println("parameters: bhwtRatio, bhGermRate, survivalRate(place holder), offspringCount(place holder), w, envVariance, maxN, file")
-println(params[p])
+println(raw"carrying capacities: " * "$allN")
+println("parameters: r(bhwtRatio), g(bh germination rate), s(fitness), cv(coefficient of variation), mln(max log population size), f(fileName)")
+println(bhwtParams[p])
 println(raw"reps: " * "$reps")
 println("********************************************************")
 
@@ -139,12 +114,12 @@ for k in allN # repeats this process at each population size, or carrying capaci
     c = 0 # counts number of replicates that reach fixation
     tick()
     for run = 1 : reps
-        c += simulate(k, bhGermRate, survivalRate, offspringCount, w, envVariance) # c increases by 1 for each rep that reaches fixation
+        c += simulate(k, g, s, cv) # c increases by 1 for each rep that reaches fixation
     end
-    npf = ((c / reps) / bhwtRatio) # calculates normalized probability of fixation
+    npf = ((c / reps) / r) # calculates normalized probability of fixation
 
-    output = open(f, "a") # adds the NPfix value to the output file
-    write(output, join([k, npf], ","), "\n")
+    output = open(file, "a") # adds the NPfix value to the output file
+    write(output, join([k, g, s, cv, npf], ","), "\n")
     close(output)
 
     push!(Npfix, npf)

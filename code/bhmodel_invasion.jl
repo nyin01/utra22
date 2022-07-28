@@ -20,7 +20,7 @@ function getFitness(survivalRate::Float64, seedProduction::Float64, w::Float64, 
         expectedW = survivalRate * seedProduction
     end
 
-    threshold = 0.3 # might make this global or a param
+    threshold = 0.2 # might make this global or a param
 
     # nVariance = envVariance
     # might need to scale variance to use in distribution:
