@@ -52,13 +52,9 @@ end
 
 function bankStatement(newSeeds, bhDormant::Int64)
     # for negative control, assume all seeds in seedbank die (bet hedging ineffective)
-    if occursin("neg", p)
-        return newSeeds
-    else
-        (bh, wt) = newSeeds
-        nextGenSeedNum = [bh + bhDormant, wt]
-        return nextGenSeedNum
-    end
+    (bh, wt) = newSeeds
+    nextGenSeedNum = [bh + bhDormant, wt]
+    return nextGenSeedNum
 end
 
 function getNextGen(k::Int64, seedNum, bhGermRate::Float64, s::Float64, cv::Float64)
@@ -133,11 +129,11 @@ end
 
 # result generation
 ratio = 0.5
-G = [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+G = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 S = [0, 0.01, 0.1, 0.5, 1]
-K = [10, 100, 500, 1000]
+K = [10, 100, 1000]
 CV = S
-reps = 1000 * 10^3
+reps = 500 * 10^3
 
 file = "results/result.csv"
 out = open(file, "w")
