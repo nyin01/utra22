@@ -89,43 +89,77 @@ end
 
 # parameters: 
 #   r(bhwtRatio), g(bh germination rate), s(selection coefficient), cv(coefficient of variation), mln(max log population size), f(fileName)
-p = "neutctr0"
-(r, g, s, cv, mln, f) = bhwtParams[p]
 
-reps = floor(500 * 10^mln) # number of replicates
-a = range(start=0, stop=mln, length=10)
-allN = [convert(Int64, floor(10^i)) for i in a] # creates a vector of 10 population sizes evenly spaced on a log scale
-popfirst!(allN)
+# p = "negctr"
+# (r, g, s, cv, mln, f) = bhwtParams[p]
 
-file = "results/$f.csv"
+# reps = floor(500 * 10^mln) # number of replicates
+# a = range(start=0, stop=mln, length=10)
+# allN = [convert(Int64, floor(10^i)) for i in a] # creates a vector of 10 population sizes evenly spaced on a log scale
+# popfirst!(allN)
+
+# file = "results/$f.csv"
+# out = open(file, "w")
+# write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
+# close(out)
+
+# println("********************************************************")
+# println(raw"carrying capacities: " * "$allN")
+# println("parameters: r(bhwtRatio), g(bh germination rate), s(fitness), cv(coefficient of variation), mln(max log population size), f(fileName)")
+# println(bhwtParams[p])
+# println(raw"reps: " * "$reps")
+# println("********************************************************")
+
+# Npfix = Float64[] # creates an empty vector where normalized pfix values will be added
+# for k in allN # repeats this process at each population size, or carrying capacity
+#     c = 0 # counts number of replicates that reach fixation
+#     tick()
+#     for run = 1 : reps
+#         c += simulate(k, g, s, cv) # c increases by 1 for each rep that reaches fixation
+#     end
+#     npf = ((c / reps) / r) # calculates normalized probability of fixation
+
+#     output = open(file, "a") # adds the NPfix value to the output file
+#     write(output, join([k, g, s, cv, npf], ","), "\n")
+#     close(output)
+
+#     push!(Npfix, npf)
+
+#     tock()
+
+#     println(raw"carrying capacity: "*"$k"*", bh fixation count: "*"$c")
+#     println("========================================================")
+# end
+
+# result generation
+ratio = 0.5
+G = [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+S = [0, 0.01, 0.1, 0.5, 1]
+K = [10, 100, 500, 1000]
+CV = S
+reps = 1000 * 10^3
+
+file = "results/result.csv"
 out = open(file, "w")
 write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
 close(out)
 
-println("********************************************************")
-println(raw"carrying capacities: " * "$allN")
-println("parameters: r(bhwtRatio), g(bh germination rate), s(fitness), cv(coefficient of variation), mln(max log population size), f(fileName)")
-println(bhwtParams[p])
-println(raw"reps: " * "$reps")
-println("********************************************************")
-
-Npfix = Float64[] # creates an empty vector where normalized pfix values will be added
-for k in allN # repeats this process at each population size, or carrying capacity
-    c = 0 # counts number of replicates that reach fixation
-    tick()
-    for run = 1 : reps
-        c += simulate(k, g, s, cv) # c increases by 1 for each rep that reaches fixation
+for k in K
+    for g in G
+        for s in S
+            for cv in CV
+                tick()
+                count = 0
+                for run = 1 : reps
+                    count += simulate(k, g, s, cv)
+                end
+                npf = ((count / reps) / ratio)
+                output = open(file, "a")
+                write(output, join([k, g, s, cv, npf], ","), "\n")
+                close(output)
+                tock()
+            end
+        end
     end
-    npf = ((c / reps) / r) # calculates normalized probability of fixation
-
-    output = open(file, "a") # adds the NPfix value to the output file
-    write(output, join([k, g, s, cv, npf], ","), "\n")
-    close(output)
-
-    push!(Npfix, npf)
-
-    tock()
-
-    println(raw"carrying capacity: "*"$k"*", bh fixation count: "*"$c")
-    println("========================================================")
 end
+

@@ -18,13 +18,8 @@ bhwtParams = Dict(
     [0.5, 0.6, 0.0, 0.3, 3,  "ctr_pos"],
     # negative control: delayed germination is deleterious when environment has low variance
     "negctr" => 
-    [0.5, 0.6, 0.0, 0.05, 3,  "ctr_neg"]
+    [0.5, 0.6, 0.0, 0.0, 3,  "ctr_neg"]
 )
-
-G = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
-S = [0, 0.01, 0.1, 0.5, 1]
-N = [10, 100, 500, 1000, 5000, 10000]
-CV = S
 
 
 
