@@ -70,7 +70,7 @@ function getNextGen(k::Int64, seedNum, bhGermRate::Float64, s::Float64, cv::Floa
 end
 
 function simulate(k::Int64, bhGermRate::Float64, s::Float64, cv::Float64)
-    initBH = ceil(Int64, r * k)
+    initBH = ceil(Int64, ratio * k)
     # number of seeds for BH population and non-BH population, respectively
     seedNum = [initBH, k - initBH]
     generations::Int64 = 1
@@ -129,13 +129,16 @@ end
 
 # result generation
 ratio = 0.5
-G = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+# G = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+G = [0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 S = [0, 0.01, 0.1, 0.5, 1]
-K = [10, 100, 1000]
-CV = S
+# K = [10, 100, 1000]
+K = [100]
+# CV = S
+CV = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]
 reps = 500 * 10^3
 
-file = "results/result.csv"
+file = "results/sweep_result.csv"
 out = open(file, "w")
 write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
 close(out)
