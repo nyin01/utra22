@@ -130,18 +130,18 @@ end
 # result generation
 ratio = 0.5
 # G = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-G = [0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+G = [1.0]
 S = [0, 0.01, 0.1, 0.5, 1]
-# K = [10, 100, 1000]
-K = [100]
-# CV = S
-CV = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]
+K = [10, 100, 1000]
+# K = [100]
+CV = S
+# CV = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]
 reps = 500 * 10^3
 
-file = "results/sweep_result.csv"
-out = open(file, "w")
-write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
-close(out)
+file = "plotting/results/final_results.csv"
+# out = open(file, "w")
+# write(out, join(["k", "g", "s", "cv", "npf"], ","), "\n") 
+# close(out)
 
 for k in K
     for g in G
