@@ -1,5 +1,5 @@
 # Simulating Bet Hedging Strategies of Native and Exotic Annual Plants
-*check out simulation results + more plots located under the plotting folder!* 
+*Check out simulation results + more plots located under the plotting folder!* 
 
 [updated 8/4]
 
