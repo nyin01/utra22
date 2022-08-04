@@ -1,24 +1,6 @@
 # invasive annuals seed production range [200, 3000] 
 # native annuals seed production range []
 
-# r(bhwtRatio), g(bh germination rate), s(selection coefficient), cv(coefficient of variation), mln(max log population size), f(fileName)
-bhwtParams = Dict(
-    # neutral: all BH seeds germinate, BH and WT behave identically, fitness = 1
-    # neutral0: variance=0
-    "neutctr0" => 
-    [0.5, 1.0, 0.0, 0.0, 3,  "ctr_neut0"],
-    # neutral1: low variance
-    "neutctr1" => 
-    [0.5, 1.0, 0.0, 0.1, 3,  "ctr_neut1"],
-    # positive control: delayed germination should be beneficial when environment has high variance
-    "posctr" => 
-    [0.5, 0.6, 0.0, 0.3, 3,  "ctr_pos"],
-    # negative control: delayed germination should be deleterious when environment has low variance and dormant seeds die
-    "negctr" => 
-    [0.5, 0.6, 0.0, 0.0, 3,  "ctr_neg"]
-)
-
-
 
 
 
