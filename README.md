@@ -1,4 +1,4 @@
-# RELOCATED TO https://github.com/nyin01/bet_hedging
+# [RELOCATED TO https://github.com/nyin01/bet_hedging]
 
 # Simulating Bet Hedging Strategies of Native and Exotic Annual Plants
 *Check out simulation results + more plots located under the plotting folder!* 
